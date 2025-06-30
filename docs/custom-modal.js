@@ -1,3 +1,4 @@
+// CustomModal - Modal básico com barra superior e suporte a arrastar
 (function() {
     if (window.CustomModal) return;
 
@@ -10,12 +11,10 @@
       background: #414141;
       border-radius: 5px;
       color: white;
-      width: 300px;
-      height: 200px;
       font-size: 16px;
       z-index: 9999;
       box-sizing: border-box;
-      display: flex;
+      display: inline-flex;
       flex-direction: column;
     }
 
@@ -46,6 +45,13 @@
       align-items: center;
       text-align: center;
     }
+
+    .custom-modal-footer {
+      padding: 6px;
+      font-size: 11px;
+      color: #ccc;
+      text-align: center;
+    }
   `;
 
     const html = (title, contentHTML) => `
@@ -54,6 +60,7 @@
         <button class="custom-modal-close">&times;</button>
       </div>
       <div class="custom-modal-content">${contentHTML}</div>
+      <div class="custom-modal-footer">Created By GalinhaDeColete</div>
     `;
 
     const styleTag = document.createElement('style');
@@ -61,27 +68,35 @@
     document.head.appendChild(styleTag);
 
     window.CustomModal = {
+        _modal: null,
+
         show({ content = '', title = 'Modal' }) {
+            this.close();
+
             const modal = document.createElement('div');
             modal.className = 'custom-modal';
             modal.innerHTML = html(title, content);
             document.body.appendChild(modal);
+            this._modal = modal;
 
-            modal.querySelector('.custom-modal-close').addEventListener('click', () => modal.remove());
-
-            document.addEventListener('click', function handler(event) {
-                if (!modal.contains(event.target)) {
-                    modal.remove();
-                    document.removeEventListener('click', handler);
-                }
+            // Botão de fechar
+            modal.querySelector('.custom-modal-close').addEventListener('click', () => {
+                this.close();
             });
 
+            this._enableDrag(modal);
+        },
+
+        _enableDrag(modal) {
             const header = modal.querySelector('.custom-modal-header');
+            const closeBtn = modal.querySelector('.custom-modal-close');
             let isDragging = false;
             let offsetX = 0;
             let offsetY = 0;
 
             header.addEventListener('mousedown', (e) => {
+                if (e.target === closeBtn) return; // não arrasta ao clicar no botão de fechar
+
                 isDragging = true;
                 const rect = modal.getBoundingClientRect();
                 offsetX = e.clientX - rect.left;
@@ -99,6 +114,20 @@
             document.addEventListener('mouseup', () => {
                 isDragging = false;
             });
+        },
+
+        update(contentHTML) {
+            if (this._modal) {
+                const content = this._modal.querySelector('.custom-modal-content');
+                if (content) content.innerHTML = contentHTML;
+            }
+        },
+
+        close() {
+            if (this._modal) {
+                this._modal.remove();
+                this._modal = null;
+            }
         }
     };
 })();
