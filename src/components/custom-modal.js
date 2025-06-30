@@ -1,20 +1,14 @@
-// CustomModal - Modal preto básico centralizado
+// CustomModal - Modal básico centralizado sem fundo
 (function() {
     if (window.CustomModal) return;
 
     const style = document.createElement('style');
     style.innerHTML = `
-    .custom-modal-backdrop {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: 9998;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
     .custom-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       background: black;
       color: white;
       width: 300px;
@@ -30,17 +24,18 @@
 
     window.CustomModal = {
         show(message = 'Hello World') {
-            const backdrop = document.createElement('div');
-            backdrop.className = 'custom-modal-backdrop';
-
             const modal = document.createElement('div');
             modal.className = 'custom-modal';
             modal.textContent = message;
 
-            backdrop.appendChild(modal);
-            document.body.appendChild(backdrop);
+            document.body.appendChild(modal);
 
-            backdrop.addEventListener('click', () => backdrop.remove());
+            document.addEventListener('click', function handler(event) {
+                if (!modal.contains(event.target)) {
+                    modal.remove();
+                    document.removeEventListener('click', handler);
+                }
+            });
         }
     };
 })();
