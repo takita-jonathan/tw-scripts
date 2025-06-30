@@ -12,12 +12,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Copy scripts to docs/
+      - name: Copy all .js files from src/ to docs/
         run: |
           mkdir -p docs
-          cp -r src/scripts/*.js docs/
+          find src -name "*.js" -exec cp {} docs/ \;
 
       - name: Commit updated docs/
         run: |
