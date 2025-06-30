@@ -79,9 +79,12 @@
             document.body.appendChild(modal);
             this._modal = modal;
 
-            // Botão de fechar
             modal.querySelector('.custom-modal-close').addEventListener('click', () => {
                 this.close();
+            });
+
+            document.addEventListener('keydown', this._escHandler = (e) => {
+                if (e.key === 'Escape') this.close();
             });
 
             this._enableDrag(modal);
